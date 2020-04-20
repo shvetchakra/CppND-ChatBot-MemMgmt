@@ -27,7 +27,7 @@ ChatBot::ChatBot(std::string filename)
     _rootNode = nullptr;
 
     // load image into heap memory
-    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
+    _image = new wxBitmap ( filename, wxBITMAP_TYPE_PNG ) ;
 }
 //Copy Constructor
 ChatBot::ChatBot(const ChatBot &source)
@@ -36,46 +36,53 @@ ChatBot::ChatBot(const ChatBot &source)
     
     _chatLogic = source._chatLogic;
     _rootNode = source._rootNode;
-    _image = new wxBitmap(*source._image);
-    // *_image = *source._image;
+    _currentNode = source._currentNode;
+    _image = new wxBitmap(*source._image) ;
+    
 }
 //Copy Assignment
 ChatBot& ChatBot::operator=(const ChatBot &source)
 {
     std::cout <<"ChatBot Copy Assignment" <<std::endl;
     if(&source !=this){
-        delete this->_image;
-        this->_image = NULL;
+        delete this->_image; 
+        
         this->_chatLogic = source._chatLogic;
         this->_rootNode = source._rootNode;
+        this->_currentNode = source._currentNode;
         this->_image = new wxBitmap(*source._image);
-        //this.*_image = *source._image;
+        
     }
     return *this;
 }
 //Move Constructor
 ChatBot::ChatBot(ChatBot &&source){
     std::cout << "ChatBot Move Constructor" << std::endl;
+    
     this->_image = source._image;
-    source._image = NULL;
-    this->_rootNode = source._rootNode;
-    source._chatLogic = nullptr;
     this->_chatLogic = source._chatLogic;
+    this->_rootNode = source._rootNode;
+    this->_currentNode = source._currentNode;
+    source._image = NULL;
+    source._chatLogic = nullptr;
     source._rootNode = nullptr;
+    source._currentNode = nullptr;
 }
 //Move Assignment
 ChatBot& ChatBot::operator=(ChatBot &&source)
 {
+    std::cout << "ChatBot Move Assignment" << std::endl;
     if(&source != this)
     {
         delete this->_image;
-        
         this->_image = source._image;
         this->_chatLogic = source._chatLogic;
         this->_rootNode = source._rootNode;
+        this->_currentNode = source._currentNode;
         source._image = NULL;
         source._chatLogic = nullptr;
         source._rootNode = nullptr;
+        source._currentNode = nullptr;
     }
     return *this;
 }
@@ -144,7 +151,9 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::string answer = answers.at(dis(generator));
 
     // send selected node answer to user
+    _chatLogic->SetChatbotHandle(this);
     _chatLogic->SendMessageToUser(answer);
+
 }
 
 int ChatBot::ComputeLevenshteinDistance(std::string s1, std::string s2)
